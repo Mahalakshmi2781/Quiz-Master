@@ -1,0 +1,84 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+
+# Define your questions, options, and correct answers
+questions = [
+    {
+        "question": "What is the capital of France?",
+        "options": ["Berlin", "Madrid", "Paris", "Rome"],
+        "correct_answer": "Paris",
+    },
+    {
+        "question": "Which planet is known as the Red Planet?",
+        "options": ["Earth", "Mars", "Venus", "Jupiter"],
+        "correct_answer": "Mars",
+    },
+    # Add more questions here...
+]
+
+# Shuffle the questions to make the quiz more dynamic
+random.shuffle(questions)
+
+# Initialize variables
+current_question = 0
+score = 0
+time_limit = 30  # Set the time limit for each question (in seconds)
+
+# Create a function to display the next question
+def next_question():
+    global current_question, score
+    if current_question < len(questions):
+        question_label.config(text=questions[current_question]["question"])
+        for i in range(4):
+            option_buttons[i].config(text=questions[current_question]["options"][i])
+        current_question += 1
+        score_label.config(text=f"Score: {score}")
+        countdown(time_limit)
+    else:
+        messagebox.showinfo("Quiz Completed", f"Your score: {score}/{len(questions)}")
+        window.quit()
+
+# Create a function to check the selected answer
+def check_answer(selected_option):
+    global score
+    correct_answer = questions[current_question - 1]["correct_answer"]
+    if selected_option == correct_answer:
+        score += 1
+    next_question()
+
+# Create a countdown timer
+def countdown(seconds):
+    if seconds > 0:
+        timer_label.config(text=f"Time left: {seconds} s")
+        window.after(1000, countdown, seconds - 1)
+    else:
+        messagebox.showinfo("Time's Up!", "You ran out of time.")
+        next_question()
+
+# Create the tkinter window
+window = tk.Tk()
+window.title("Quiz Game")
+
+# Create labels
+question_label = tk.Label(window, text="", font=("Helvetica", 16))
+score_label = tk.Label(window, text="Score: 0", font=("Helvetica", 12))
+timer_label = tk.Label(window, text="", font=("Helvetica", 12))
+
+# Create option buttons
+option_buttons = []
+for i in range(4):
+    option_buttons.append(tk.Button(window, text="", font=("Helvetica", 12), command=lambda i=i: check_answer(questions[current_question - 1]["options"][i])))
+
+# Place widgets on the window
+question_label.pack(pady=20)
+score_label.pack()
+timer_label.pack()
+for button in option_buttons:
+    button.pack(pady=5)
+
+# Start the quiz
+next_question()
+
+# Start the tkinter main loop
+window.mainloop()
